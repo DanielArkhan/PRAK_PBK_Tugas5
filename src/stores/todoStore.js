@@ -1,18 +1,25 @@
-// src/stores/todoStore.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
 export const useTodoStore = defineStore('todo', () => {
-  // STATE
   const todos = ref([])
   const newTodoText = ref('')
+  const filter = ref('all')
 
-  // GETTERS
   const totalTodos = computed(() => todos.value.length)
   const doneTodos = computed(() => todos.value.filter(todo => todo.done).length)
   const unfinishedTodos = computed(() => todos.value.filter(todo => !todo.done))
 
-  // ACTIONS
+  const filteredTodos = computed(() => {
+    if (filter.value === 'completed') {
+      return todos.value.filter(todo => todo.done)
+    } else if (filter.value === 'active') {
+      return todos.value.filter(todo => !todo.done)
+    } else {
+      return todos.value
+    }
+  })
+
   function addTodo() {
     if (!newTodoText.value.trim()) return
     todos.value.push({
@@ -32,6 +39,10 @@ export const useTodoStore = defineStore('todo', () => {
     todos.value = todos.value.filter(t => t.id !== id)
   }
 
+  function setFilter(value) {
+    filter.value = value
+  }
+
   return {
     todos,
     newTodoText,
@@ -40,6 +51,9 @@ export const useTodoStore = defineStore('todo', () => {
     unfinishedTodos,
     addTodo,
     toggleTodo,
-    deleteTodo
+    deleteTodo,
+    filteredTodos,
+    filter,
+    setFilter
   }
 })
